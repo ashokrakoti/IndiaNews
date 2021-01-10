@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_top_news"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/top_news"/>
+
+    <item android:id="@+id/menu_business"
+        android:icon="@drawable/ic_baseline_business_24"
+        android:title="@string/business"/>
+
+    <item android:id="@+id/menu_entertainment"
+        android:icon="@drawable/ic_baseline_movie_24"
+        android:title="@string/entertainment"/>
+
+    <item android:id="@+id/menu_science"
+        android:icon="@drawable/ic_baseline_science_24"
+        android:title="@string/sci_tech"/>
+
+    <item android:id="@+id/menu_sports"
+        android:icon="@drawable/ic_baseline_sports_24"
+        android:title="@string/sports_news"/>
+
+</menu>
