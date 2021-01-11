@@ -54,4 +54,7 @@ dependencies {
 
     //swipe to refresh
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
+    //card views
+    implementation "androidx.cardview:cardview:1.0.0"
 }

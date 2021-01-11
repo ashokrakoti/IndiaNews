@@ -17,6 +17,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -35,12 +36,15 @@ import java.util.Map;
 public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
 
     private static final String MAIN_ACTIVITY_CLASS = "MainActivity.class";
+    private static final String URI_NEWS = "https://newsapi.org/v2/top-headlines?";
+    private static final String API_KEY = "aab465815faa442f9b10a40e195c059f";
+    private static final String URI_DEFAULT ="https://newsapi.org/v2/top-headlines?country=in&apiKey=aab465815faa442f9b10a40e195c059f";
 
     //object used for view binding
     private ActivityMainBinding binding;
 
     //adapter object
-    private  NewsAdapter mAdapter;
+    private final NewsAdapter mAdapter = new NewsAdapter(this);
 
     //these are for navigation drawer
     NavigationView nav;
@@ -60,8 +64,8 @@ public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
 
         //checking the internet connection
         if(getActiveNetworkInfo()){
-            fetchNews();
-            mAdapter = new NewsAdapter(this);
+            fetchNews(URI_DEFAULT);
+            //mAdapter = new NewsAdapter(this);
             binding.newsListView.setAdapter(mAdapter);
         }else{
             binding.progressBar.setVisibility(View.GONE);
@@ -77,6 +81,12 @@ public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
         //this is to toggle the nav menu
         toggle = new ActionBarDrawerToggle(this, drawerLayout, binding.toolbar,R.string.open,R.string.close);
         drawerLayout.addDrawerListener(toggle);
+
+        // this code sets upt the hamburger icon in the top left of screen.
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_24);//setting the hamburger icon.
+
         nav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -90,30 +100,65 @@ public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
                     case R.id.menu_business:
                         Toast.makeText(getApplicationContext(),"Business News", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        fetchNews("https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=aab465815faa442f9b10a40e195c059f");
+                        binding.newsListView.setAdapter(mAdapter);
                         break;
 
                     case R.id.menu_entertainment:
                         Toast.makeText(getApplicationContext(),"Entertainment News", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        fetchNews("https://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=aab465815faa442f9b10a40e195c059f");
+                        binding.newsListView.setAdapter(mAdapter);
                         break;
 
                     case R.id.menu_sports:
                         Toast.makeText(getApplicationContext(),"Sports News", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        fetchNews("https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=aab465815faa442f9b10a40e195c059f");
+                        binding.newsListView.setAdapter(mAdapter);
                         break;
 
                     case R.id.menu_science:
                         Toast.makeText(getApplicationContext(),"Science News", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        fetchNews("https://newsapi.org/v2/top-headlines?country=in&category=science&apiKey=aab465815faa442f9b10a40e195c059f");
+                        binding.newsListView.setAdapter(mAdapter);
+                        break;
+
+                    case R.id.menu_tech:
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        fetchNews("https://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=aab465815faa442f9b10a40e195c059f");
+                        binding.newsListView.setAdapter(mAdapter);
                         break;
                 }
                 return true;
             }
         });
+
+        //setting the color of the loader
+        binding.swipeContainer.setColorSchemeResources(R.color.yellow);
+        // SetOnRefreshListener on SwipeRefreshLayout
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //binding.swipeContainer.setColorSchemeColors(getResources().getColor(R.color.colorOnSecondary));
+               // binding.swipeContainer.setColorSchemeColors(Color.BLUE, Color.YELLOW, Color.BLUE);
+
+                binding.swipeContainer.setRefreshing(false);
+                fetchNews(URI_DEFAULT);
+                try {
+                    Thread.sleep(1000);// this is added to improve the reloading process animations inside the recycler view.
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // mAdapter = new NewsAdapter(MAIN_ACTIVITY_CLASS);
+                binding.newsListView.setAdapter(mAdapter);
+            }
+        });
     }
 
-    private void fetchNews(){
-        String url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=aab465815faa442f9b10a40e195c059f";
+    private void fetchNews(String url){
+       // String url = "https://newsapi.org/v2/top-headlines?";
         List<NewsItem> newsItemList = new ArrayList<>();
         JsonObjectRequest jsonRequest = new JsonObjectRequest(
                 Request.Method.GET,
@@ -156,6 +201,11 @@ public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
         MySingleton.getInstance(this).addToRequestQueue(jsonRequest);
     }
 
+
+    /*
+       this method opens the news article in a custom tab inside the app.
+       this uses the concept of custom tabs.
+     */
     @Override
     public void OnItemClicked(NewsItem item) {
         //Toast.makeText(this, "item Clicked :"+item, Toast.LENGTH_LONG).show();
@@ -171,8 +221,17 @@ public class NewsActivity extends AppCompatActivity implements NewsItemClicked {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        return isConnected;
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public String buildUrl(String category){
+        StringBuilder newUrl = new StringBuilder(URI_NEWS);//"https://newsapi.org/v2/top-headlines?"
+        newUrl.append("country=in");
+        newUrl.append("&");
+        newUrl.append("category=").append(category);
+        newUrl.append("&");
+        newUrl.append("apikey=").append(API_KEY);
+        Log.i("Final Url: ",newUrl.toString());
+        return newUrl.toString();
     }
 }

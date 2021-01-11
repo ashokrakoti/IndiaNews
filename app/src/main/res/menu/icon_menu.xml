@@ -15,10 +15,14 @@
 
     <item android:id="@+id/menu_science"
         android:icon="@drawable/ic_baseline_science_24"
-        android:title="@string/sci_tech"/>
+        android:title="@string/science"/>
 
     <item android:id="@+id/menu_sports"
         android:icon="@drawable/ic_baseline_sports_24"
-        android:title="@string/sports_news"/>
+        android:title="@string/sports"/>
+
+    <item android:id="@+id/menu_tech"
+        android:icon="@drawable/ic_technology"
+        android:title="@string/tech"/>
 
 </menu>

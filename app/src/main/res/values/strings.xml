@@ -4,11 +4,13 @@
     <string name="top_news">Top News</string>
     <string name="business">Business</string>
     <string name="entertainment">Entertainment</string>
-    <string name="sci_tech">Sci-Tech</string>
-    <string name="sports_news">Sports News</string>
+    <string name="science">Science</string>
+    <string name="sports">Sports</string>
+    <string name="tech">Technology</string>
     <string name="india_news">India News</string>
     <string name="complete_news_destination">Complete News Destination</string>
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="no_internet_tag">No Internet Connection</string>
+    <string name="no_internet_tag">OOPS!!!!.....No Internet Connection</string>
+
 </resources>
